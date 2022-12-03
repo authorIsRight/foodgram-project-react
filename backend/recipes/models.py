@@ -2,6 +2,7 @@ from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.core.validators import RegexValidator
 
 User = get_user_model()
 
@@ -14,10 +15,16 @@ class Tag(models.Model):
         unique=True,
         verbose_name='Название'
     )
-    color = ColorField(
-        unique=True,
+    color = models.CharField(
         max_length=7,
-        verbose_name='Цвет в HEX'
+        unique=True,
+        null=True,
+        default = '#FFFFE0',
+        validators=[
+            RegexValidator(
+                regex='^#(?:[0-9a-fA-F]{1,2}){3}$',
+                message='HEX color required')
+        ],
     )
     slug = models.SlugField(
         max_length=200,

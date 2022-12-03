@@ -16,7 +16,7 @@ admin.site.empty_value_display = 'Empty Value Display'
 class TagAdmin(admin.ModelAdmin):
     """Управление тэгами в админке"""
 
-    list_display = ('pk', 'name', 'color','slug')
+    list_display = ('pk', 'name','slug')
 
 
 @admin.register(Ingredient)
@@ -26,15 +26,30 @@ class IngridientAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'measurement_unit')
     search_fields = ('name',)
 
+class RecipeIngridientInline(admin.StackedInline):
+    """Вспомогательный, связывающий класс для админки"""
+
+    model = IngredientRecipe
+    min_num = 1
+    extra = 1
+
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Управление рецептами в админке"""
 
-    list_display = ('pk', 'name', 'author')
+    list_display = ('pk', 'name', 'author', 'get_favorites')
     search_fields = ('name', 'author', 'tags',)
     list_filter = ('name', 'author', 'tags')
+    inlines = (RecipeIngridientInline,)
 
+    def get_favorites(self, obj):
+        return obj.favorites.count()
+
+    get_favorites.short_description = (
+        'Число добавлений этого рецепта в избранное'
+    )
+    
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
