@@ -15,17 +15,14 @@ class Tag(models.Model):
         unique=True,
         verbose_name='Название'
     )
-    color = models.CharField(
-        max_length=7,
+    color = ColorField(
         unique=True,
-        null=True,
-        default = '#FFFFE0',
-        validators=[
-            RegexValidator(
-                regex='^#(?:[0-9a-fA-F]{1,2}){3}$',
-                message='HEX color required')
-        ],
-    )
+        max_length=7,
+        verbose_name='Цвет в HEX',
+        blank = True,
+        null = True,
+        default = '#FFFFE0'
+    )    
     slug = models.SlugField(
         max_length=200,
         unique=True,
