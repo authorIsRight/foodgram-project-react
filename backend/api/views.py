@@ -24,7 +24,7 @@ from recipes.models import (
 )
 from users.models import User
 
-# from .filters import do later
+from .filters import IngredientFilter
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
     CustomUserSerializer,
@@ -117,7 +117,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
-
+    pagination_class = None
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для работы с обьектами класса Ingridient"""
@@ -126,9 +126,9 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend, )
-    # filterset_class = 
-    # search_fields = ('^name', )
-
+    filterset_class = IngredientFilter
+    search_fields = ('^name', )
+    pagination_class = None
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для работы с обьектами класса Recipe"""

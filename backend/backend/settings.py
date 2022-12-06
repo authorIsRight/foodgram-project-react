@@ -24,14 +24,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    'django_extensions'
-#    'corsheaders', # не забыть удалить и из requirements
+    'django_extensions',
+    'corsheaders', # не забыть удалить и из requirements
 ]
 
 AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
-#    'corsheaders.middleware.CorsMiddleware', # не забыть удалить и из requirements
+    'corsheaders.middleware.CorsMiddleware', # не забыть удалить и из requirements
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -117,7 +117,7 @@ REST_FRAMEWORK = {
 
 
 DJOSER = {
-    'LOGIN_FIELD': 'username',
+    'LOGIN_FIELD': 'email',
     'SEND_ACTIVATION_EMAIL': False,
     'HIDE_USERS': False,
     'SERIALIZERS': {
@@ -135,9 +135,9 @@ DJOSER = {
 }
 
 # удалить перед сборкой
-#CORS_ORIGIN_ALLOW_ALL = True
-#CORS_URLS_REGEX = r'^/api/.*$'
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
 
 
 
-# аргкх, urls не настроены еще , и чего я хотел?
+# потом удалить

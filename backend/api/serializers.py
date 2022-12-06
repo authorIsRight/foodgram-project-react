@@ -21,7 +21,7 @@ def representation(context, instance, serializer):
 
 
 class CustomUserSerializer(UserSerializer):
-    """Сериализатор для модели User."""
+    """Сериализатор для модели User"""
 
     is_subscribed = serializers.SerializerMethodField(read_only=True)
 
@@ -38,7 +38,7 @@ class CustomUserSerializer(UserSerializer):
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
-    """Сериализатор для создания объекта класса User."""
+    """Сериализатор для создания объекта класса User"""
 
     class Meta:
         model = User
@@ -46,7 +46,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Tag."""
+    """Сериализатор для модели Tag"""
 
     class Meta:
         model = Tag
@@ -54,7 +54,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Ingredient."""
+    """Сериализатор для модели Ingredient"""
 
     class Meta:
         model = Ingredient
@@ -62,7 +62,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели IngredientRecipe."""
+    """Сериализатор для модели IngredientRecipe"""
 
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
@@ -107,7 +107,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class AddIngredientSerializer(serializers.ModelSerializer):
-    """Вспомогательный сериализатор для RecipeCreateSerializer."""
+    """Вспомогательный сериализатор для RecipeCreateSerializer"""
 
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
 
@@ -117,7 +117,7 @@ class AddIngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания и изменения рецептов."""
+    """Сериализатор для создания и изменения рецептов"""
 
     author = CustomUserSerializer(read_only=True)
     ingredients = AddIngredientSerializer(many=True)
@@ -205,13 +205,27 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
 class RecipeShortSerializer(serializers.ModelSerializer):
     """
-    Вспомогательный сериализатор для FollowSerializer, FavoriteSerializer и
-    ShoppingListSerializer
+    Вспомогательный сериализатор для FavoriteSerializer,
+    FollowSerializer и ShoppingListSerializer
     """
 
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class FavoriteSerializer(RecipeShortSerializer):
+    """Сериализатор для модели Favorite."""
+
+    class Meta:
+        model = Favorite
+        fields = ('user', 'recipe')
+
+    def to_representation(self, instance):
+        return representation(
+            self.context,
+            instance.recipe,
+            RecipeShortSerializer)
 
 
 class FollowSerializer(CustomUserSerializer):
@@ -235,20 +249,6 @@ class FollowSerializer(CustomUserSerializer):
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()
-
-
-class FavoriteSerializer(RecipeShortSerializer):
-    """Сериализатор для модели Favorite."""
-
-    class Meta:
-        model = Favorite
-        fields = ('user', 'recipe')
-
-    def to_representation(self, instance):
-        return representation(
-            self.context,
-            instance.recipe,
-            RecipeShortSerializer)
 
 
 class ShoppingListSerializer(RecipeShortSerializer):
