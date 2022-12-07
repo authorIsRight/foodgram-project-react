@@ -23,8 +23,7 @@ from recipes.models import (
     Tag
 )
 from users.models import User
-
-from .filters import IngredientFilter
+from .filters import IngredientFilter, RecipeFilter
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
     CustomUserSerializer,
@@ -37,9 +36,10 @@ from .serializers import (
     TagSerializer
 )
 
+
 def get_shopping_cart(user):
     """Ипользуется в RecipeViewSet
-    
+
     Создает "сводную таблицу" по сумме
     из списка ингридиентов в покупках
     """
@@ -57,12 +57,13 @@ def get_shopping_cart(user):
         in summed_ingredients.items()
     ])
 
+
 class CustomUserViewSet(UserViewSet):
     """Вьюсет для работы с обьектами класса User и подписки на авторов"""
 
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+#    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     @action(
         detail=False,
@@ -110,6 +111,14 @@ class CustomUserViewSet(UserViewSet):
         return Response(f'Нельзя отписаться от {author}, не подписавшись',
                         status=status.HTTP_400_BAD_REQUEST)
 
+#    @action(methods=('get',), detail=False)
+#    def me(self, request):
+#        user = request.user
+#        if user.is_anonymous:
+#            return ('AAAAAAAAAAAAAAAA')
+#            return Response('Нельзя подписаться на себя самого',
+#                                status=status.HTTP_400_BAD_REQUEST)
+
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет работы с обьектами класса Tag"""
@@ -118,6 +127,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
     pagination_class = None
+
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет для работы с обьектами класса Ingridient"""
@@ -130,13 +140,14 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('^name', )
     pagination_class = None
 
+
 class RecipeViewSet(viewsets.ModelViewSet):
     """Вьюсет для работы с обьектами класса Recipe"""
 
     queryset = Recipe.objects.all()
     permission_classes = (IsAuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    # filterset_class =
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -186,12 +197,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             request.method, request, pk, ShoppingList, ShoppingListSerializer
         )
 
-
     @action(
         detail=False,
         permission_classes=(IsAuthenticated,),
     )
-
     def download_shopping_cart(self, user):
         shopping_cart = get_shopping_cart(user)
         filename = 'shopping-list.txt'

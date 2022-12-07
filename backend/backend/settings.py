@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'django_extensions',
-    'corsheaders', # не забыть удалить и из requirements
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -121,7 +120,6 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': False,
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        # add those serializers on Sunday into api.serializers 
         'user': 'api.serializers.CustomUserSerializer',
         'user_create': 'api.serializers.CustomUserCreateSerializer',
         'current_user': 'api.serializers.CustomUserSerializer',
@@ -129,15 +127,14 @@ DJOSER = {
     'PERMISSIONS': {
         'user_create': ['rest_framework.permissions.AllowAny'],
         'user_delete': ['djoser.permissions.CurrentUserOrAdmin'],
-        'user': ['djoser.permissions.CurrentUserOrAdmin'],
-        'user_list': ['djoser.permissions.CurrentUserOrAdmin'],
+        'user':  ['rest_framework.permissions.IsAuthenticated'],
+        'user_list': ['rest_framework.permissions.AllowAny'],
+
     },
 }
 
 # удалить перед сборкой
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
-
-
 
 # потом удалить
