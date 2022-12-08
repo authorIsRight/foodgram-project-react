@@ -1,5 +1,6 @@
 from collections import Counter
 
+from django.db import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -111,14 +112,6 @@ class CustomUserViewSet(UserViewSet):
         return Response(f'Нельзя отписаться от {author}, не подписавшись',
                         status=status.HTTP_400_BAD_REQUEST)
 
-#    @action(methods=('get',), detail=False)
-#    def me(self, request):
-#        user = request.user
-#        if user.is_anonymous:
-#            return ('AAAAAAAAAAAAAAAA')
-#            return Response('Нельзя подписаться на себя самого',
-#                                status=status.HTTP_400_BAD_REQUEST)
-
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """Вьюсет работы с обьектами класса Tag"""
@@ -183,9 +176,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk):
-        return self._create_or_destroy(
-            request.method, request, pk, Favorite, FavoriteSerializer
-        )
+        try:
+            return self._create_or_destroy(
+                request.method, request, pk, Favorite, FavoriteSerializer
+            )
+        except IntegrityError as e:
+            return Response(f'{status.HTTP_400_BAD_REQUEST} Произошла ошибка {e} при добавлении/удалении рецепта')
 
     @action(
         detail=True,
@@ -193,9 +189,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk):
-        return self._create_or_destroy(
-            request.method, request, pk, ShoppingList, ShoppingListSerializer
-        )
+        try:
+            return self._create_or_destroy(
+                request.method, request, pk, ShoppingList, ShoppingListSerializer
+            )
+        except IntegrityError as e:
+            return Response(f'{status.HTTP_400_BAD_REQUEST} Произошла ошибка {e} при добавлении/удалении рецепта')
 
     @action(
         detail=False,
