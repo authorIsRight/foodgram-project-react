@@ -2,7 +2,6 @@ from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.core.validators import RegexValidator
 
 User = get_user_model()
 
@@ -19,10 +18,10 @@ class Tag(models.Model):
         unique=True,
         max_length=7,
         verbose_name='Цвет в HEX',
-        blank = True,
-        null = True,
-        default = '#FFFFE0'
-    )    
+        blank=True,
+        null=True,
+        default='#FFFFE0'
+    )
     slug = models.SlugField(
         max_length=200,
         unique=True,
@@ -76,8 +75,6 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Список ингредиентов'
     )
-    # is_favorited
-    # is_in_shopping_cart  
     name = models.CharField(
         max_length=200,
         verbose_name='Название'

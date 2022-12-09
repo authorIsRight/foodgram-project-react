@@ -10,7 +10,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-#    'corsheaders', # не забыть удалить и из requirements
+    'corsheaders',  # удалить после развертывния в конейтнерах
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -25,13 +25,12 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'django_extensions',
-    
 ]
 
 AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
-#    'corsheaders.middleware.CorsMiddleware', # не забыть удалить и из requirements
+    'corsheaders.middleware.CorsMiddleware',  # удалить после развертывния в конейтнерах
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -134,8 +133,6 @@ DJOSER = {
     },
 }
 
-# удалить перед сборкой
-#CORS_ORIGIN_ALLOW_ALL = True
-#CORS_URLS_REGEX = r'^/api/.*$'
 
-# потом удалить
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'

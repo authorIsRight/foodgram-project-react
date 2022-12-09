@@ -10,7 +10,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
-    IsAuthenticatedOrReadOnly
 )
 from rest_framework.response import Response
 
@@ -64,7 +63,6 @@ class CustomUserViewSet(UserViewSet):
 
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
-#    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     @action(
         detail=False,
@@ -181,7 +179,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 request.method, request, pk, Favorite, FavoriteSerializer
             )
         except IntegrityError as e:
-            return Response(f'{status.HTTP_400_BAD_REQUEST} Произошла ошибка {e} при добавлении/удалении рецепта')
+            return Response(f'Ошибка {e} при добавлении/удалении рецепта',
+                            status.HTTP_400_BAD_REQUEST
+                            )
 
     @action(
         detail=True,
@@ -191,10 +191,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk):
         try:
             return self._create_or_destroy(
-                request.method, request, pk, ShoppingList, ShoppingListSerializer
-            )
+                request.method, request, pk, ShoppingList,
+                ShoppingListSerializer
+                )
         except IntegrityError as e:
-            return Response(f'{status.HTTP_400_BAD_REQUEST} Произошла ошибка {e} при добавлении/удалении рецепта')
+            return Response(f'Ошибка {e} при добавлении/удалении рецепта',
+                            status.HTTP_400_BAD_REQUEST
+                            )
 
     @action(
         detail=False,

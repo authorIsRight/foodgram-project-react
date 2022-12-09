@@ -15,4 +15,3 @@ with open(path_to_csv, "r", encoding="UTF-8") as csvfile:
             name=row['name'],
             measurement_unit=row['mu']
         )
-   

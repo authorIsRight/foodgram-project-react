@@ -12,11 +12,12 @@ from .models import (
 
 admin.site.empty_value_display = 'Empty Value Display'
 
+
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     """Управление тэгами в админке"""
 
-    list_display = ('pk', 'name','slug')
+    list_display = ('pk', 'name', 'slug')
 
 
 @admin.register(Ingredient)
@@ -25,6 +26,7 @@ class IngridientAdmin(admin.ModelAdmin):
 
     list_display = ('pk', 'name', 'measurement_unit')
     search_fields = ('name',)
+
 
 class RecipeIngridientInline(admin.StackedInline):
     """Вспомогательный, связывающий класс для админки"""
@@ -49,7 +51,7 @@ class RecipeAdmin(admin.ModelAdmin):
     get_favorites.short_description = (
         'Число добавлений этого рецепта в избранное'
     )
-    
+
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
@@ -59,6 +61,7 @@ class FollowAdmin(admin.ModelAdmin):
     search_fields = ('user', 'author')
     list_filter = ('user', 'author')
 
+
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     """Управление избранным в админке"""
@@ -67,7 +70,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 
 
 @admin.register(IngredientRecipe)
-class IngridientAdmin(admin.ModelAdmin):
+class IngridientRecipeAdmin(admin.ModelAdmin):
     """Управление ингридиентами в админке"""
 
     list_display = ('pk', 'ingredient', 'recipe', 'amount')
@@ -78,4 +81,3 @@ class ShoppingListAdmin(admin.ModelAdmin):
     """Управление списком покупок в админке"""
 
     list_display = ('id', 'user', 'recipe')
-    
