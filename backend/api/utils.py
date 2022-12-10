@@ -1,4 +1,5 @@
-from collections import Counter
+import pandas as pd
+from django.db.models import Sum
 
 from recipes.models import IngredientRecipe
 
@@ -14,17 +15,17 @@ def get_shopping_cart(user):
 
     Создает "сводную таблицу" по сумме
     из списка ингридиентов в покупках
+    Используем панду для красивого вывода
     """
     ingredients = IngredientRecipe.objects.filter(
-        recipe__shop_list__user=user.user
-    )
-    summed_ingredients = Counter()
-    for ing in ingredients:
-        summed_ingredients[
-            (ing.ingredient.name, ing.ingredient.measurement_unit)
-        ] += ing.amount
-    return ([
-        f"- {name}: {amount} {measurement_unit}\n"
-        for (name, measurement_unit), amount
-        in summed_ingredients.items()
-    ])
+        recipe__shop_list__user=user.user).values(
+        'ingredient__name',
+        'ingredient__measurement_unit'
+        ).order_by('ingredient__name').annotate(ingredient_total=Sum('amount'))
+    df = pd.DataFrame(list(ingredients))
+    df = df.iloc[:, [0, 2, 1]]
+    df.columns = ['ингредиент', 'количество', 'ед измерения']
+
+    return (
+        [df.to_string(index=False)]
+        )
