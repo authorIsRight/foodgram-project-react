@@ -1,14 +1,7 @@
 from django.contrib import admin
 
-from .models import (
-    Tag,
-    Ingredient,
-    Recipe,
-    Follow,
-    Favorite,
-    IngredientRecipe,
-    ShoppingList,
-)
+from .models import (Favorite, Follow, Ingredient, IngredientRecipe, Recipe,
+                     ShoppingList, Tag)
 
 admin.site.empty_value_display = 'Empty Value Display'
 

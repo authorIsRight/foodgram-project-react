@@ -1,7 +1,7 @@
 from django_filters import rest_framework as filters
-from recipes.models import Tag, Ingredient, Recipe
-from users.models import User
 
+from recipes.models import Ingredient, Recipe, Tag
+from users.models import User
 
 favorite_shop_filter = {'favorites': 'favorites__user',
                         'shop_list': 'shop_list__user'}

@@ -1,61 +1,23 @@
-from collections import Counter
-
-from django.db import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (
-    AllowAny,
-    IsAuthenticated,
-)
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from recipes.models import (
-    Favorite,
-    Follow,
-    Ingredient,
-    IngredientRecipe,
-    Recipe,
-    ShoppingList,
-    Tag
-)
+from recipes.models import (Favorite, Follow, Ingredient, Recipe, ShoppingList,
+                            Tag)
 from users.models import User
+
 from .filters import IngredientFilter, RecipeFilter
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (
-    CustomUserSerializer,
-    FavoriteSerializer,
-    FollowSerializer,
-    IngredientSerializer,
-    RecipeCreateSerializer,
-    RecipeSerializer,
-    ShoppingListSerializer,
-    TagSerializer
-)
-
-
-def get_shopping_cart(user):
-    """Ипользуется в RecipeViewSet
-
-    Создает "сводную таблицу" по сумме
-    из списка ингридиентов в покупках
-    """
-    ingredients = IngredientRecipe.objects.filter(
-        recipe__shop_list__user=user.user
-    )
-    summed_ingredients = Counter()
-    for ing in ingredients:
-        summed_ingredients[
-            (ing.ingredient.name, ing.ingredient.measurement_unit)
-        ] += ing.amount
-    return ([
-        f"- {name}: {amount} {measurement_unit}\n"
-        for (name, measurement_unit), amount
-        in summed_ingredients.items()
-    ])
+from .serializers import (CustomUserSerializer, FavoriteSerializer,
+                          FollowSerializer, IngredientSerializer,
+                          RecipeCreateSerializer, RecipeSerializer,
+                          ShoppingListSerializer, TagSerializer)
+from .utils import get_shopping_cart
 
 
 class CustomUserViewSet(UserViewSet):
@@ -70,7 +32,7 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscriptions(self, request):
         queryset = User.objects.filter(follow__user=request.user)
-        if queryset:
+        if queryset.exists():
             pages = self.paginate_queryset(queryset)
             serializer = FollowSerializer(pages, many=True,
                                           context={'request': request})
@@ -157,8 +119,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def delete_object(request, pk, model):
         user = request.user
         recipe = get_object_or_404(Recipe, pk=pk)
-        object = get_object_or_404(model, user=user, recipe=recipe)
-        object.delete()
+        obj = get_object_or_404(model, user=user, recipe=recipe)
+        obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def _create_or_destroy(self, http_method, recipe, key,
@@ -174,14 +136,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk):
-        try:
-            return self._create_or_destroy(
-                request.method, request, pk, Favorite, FavoriteSerializer
-            )
-        except IntegrityError as e:
-            return Response(f'Ошибка {e} при добавлении/удалении рецепта',
-                            status.HTTP_400_BAD_REQUEST
-                            )
+        user = request.user
+        if (request.method == 'POST' and
+                Favorite.objects.filter(user=user, recipe_id=pk).exists()):
+            return Response({
+                'errors': 'Рецепт уже добавлен в список'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        if (request.method == 'DELETE' and
+                not Favorite.objects.filter(user=user, recipe_id=pk).exists()):
+            return Response({
+                'errors': 'Рецепт уже удален из списка'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return self._create_or_destroy(
+            request.method, request, pk, Favorite, FavoriteSerializer
+        )
 
     @action(
         detail=True,
@@ -189,15 +158,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk):
-        try:
-            return self._create_or_destroy(
-                request.method, request, pk, ShoppingList,
-                ShoppingListSerializer
-                )
-        except IntegrityError as e:
-            return Response(f'Ошибка {e} при добавлении/удалении рецепта',
-                            status.HTTP_400_BAD_REQUEST
-                            )
+        user = request.user
+        if (request.method == 'POST' and
+                ShoppingList.objects.filter(user=user, recipe_id=pk).exists()):
+            return Response({
+                'errors': 'Рецепт уже добавлен в список'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        if (request.method == 'DELETE' and not
+                ShoppingList.objects.filter(user=user, recipe_id=pk).exists()):
+            return Response({
+                'errors': 'Рецепт уже удален из списка'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return self._create_or_destroy(
+            request.method, request, pk, ShoppingList,
+            ShoppingListSerializer
+            )
 
     @action(
         detail=False,

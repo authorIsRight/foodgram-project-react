@@ -3,7 +3,6 @@ from pathlib import Path
 
 from recipes.models import Ingredient
 
-
 path_to_csv = Path(__file__).parents[2] / 'data/ingredients.csv'
 
 
