@@ -12,8 +12,8 @@ services:
     image: authorisright/foodgram_backend:latest
     restart: always
     volumes:
-      - static:/code/static/
-      - media:/code/media/
+      - static:/app/static/
+      - media:/app/media/
     depends_on:
       - db
     env_file:
@@ -34,9 +34,10 @@ services:
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static:/var/html/static/
       - media:/var/html/media/
-
+    restart: always
     depends_on:
       - backend
+      - frontend      
 
 volumes:
   postgres_data:
