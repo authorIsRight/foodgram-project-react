@@ -6,11 +6,16 @@ from recipes.models import Ingredient
 path_to_csv = Path(__file__).parents[2] / 'backend/ingredients.csv'
 
 
-with open(path_to_csv, "r", encoding="UTF-8") as csvfile:
+def run():
+    with open(path_to_csv, "r", encoding="UTF-8") as csvfile:
 
-    reader = csv.DictReader(csvfile, delimiter=",", fieldnames=['name', 'mu'])
-    for row in reader:
-        Ingredient.objects.get_or_create(
-            name=row['name'],
-            measurement_unit=row['mu']
-        )
+        reader = csv.DictReader(csvfile, delimiter=",",
+                                fieldnames=['name', 'mu'])
+        for row in reader:
+            Ingredient.objects.get_or_create(
+                name=row['name'],
+                measurement_unit=row['mu']
+            )
+
+
+run()
