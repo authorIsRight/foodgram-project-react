@@ -46,10 +46,12 @@ class CustomUserViewSet(UserViewSet):
     )
     def subscribe(self, request, id):
         user = request.user
-        author = get_object_or_404(User, id=id)
+        author = get_object_or_404(User, pk=id)
         change_subscription = Follow.objects.filter(
             user=user.id, author=author.id
         )
+        serializer = FollowSerializer(author,
+                                      context={'request': request})
         if request.method == 'POST':
             if user == author:
                 return Response('Нельзя подписаться на себя самого',
@@ -62,7 +64,8 @@ class CustomUserViewSet(UserViewSet):
                 author=author
             )
             subscribe.save()
-            return Response(f'Вы подписались на {author}',
+
+            return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         if change_subscription.exists():
             change_subscription.delete()
