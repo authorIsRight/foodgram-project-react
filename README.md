@@ -93,4 +93,4 @@ python manage.py runscript import_ingrideints
 
 > Не забудьте добавить парочку тэгов через админку
 
-![Превью](https://2.downloader.disk.yandex.ru/preview/d2d857c298c9acfe0e4aac84bc23ad74bddc6981668709290b9fb66e601d5a21/inf/IXdHWD1pwUVfIYFDr19ANBxOIWGMYvV3ALhQ2y0_SYcxXyc7C0mPy4QoDW-pMJy_AeGhYJ3p2obNoZ5a_NXkPw==?uid=43339912&filename=%D0%A1%D0%BD%D0%B8%D0%BC%D0%BE%D0%BA%20%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%202022-12-13%20024053.png&disposition=inline&hash=&limit=0&content_type=image/png&owner_uid=43339912&tknv=v2&size=1858x1009)
+![Превью](https://sun9-north.userapi.com/sun9-84/s/v1/ig2/ASNeL02_4NdQ0Ty9MRnWCTxHYc6s5jTiHP_vEe7zJjgXNA7sqSzAcC7bfBtOnIz4wqw6W_19-xJIMe5YeMveRvN2.jpg?size=1290x883&quality=95&type=album)
