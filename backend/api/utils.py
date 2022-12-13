@@ -1,8 +1,7 @@
 from django.db.models import Sum
+from recipes.models import IngredientRecipe
 from rest_framework import status
 from rest_framework.response import Response
-
-from recipes.models import IngredientRecipe
 
 
 def representation(context, instance, serializer):
