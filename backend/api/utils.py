@@ -1,4 +1,7 @@
 from django.db.models import Sum
+from rest_framework import status
+from rest_framework.response import Response
+
 from recipes.models import IngredientRecipe
 
 
@@ -31,22 +34,19 @@ def get_shopping_cart(user):
     return content
 
 
-"""
-def favorite_or_shop(self, request, pk):
+def favorite_or_shop_check(self, request, pk, model, serializer):
     user = request.user
     if (request.method == 'POST'
-            and Favorite.objects.filter(user=user, recipe_id=pk).exists()):
+            and model.objects.filter(user=user, recipe_id=pk).exists()):
         return Response({
             'errors': 'Рецепт уже добавлен в список'
         }, status=status.HTTP_400_BAD_REQUEST)
     if (request.method == 'DELETE'
-            and not Favorite.objects.filter(user=user,
-                                            recipe_id=pk).exists()):
+            and not model.objects.filter(user=user,
+                                         recipe_id=pk).exists()):
         return Response({
             'errors': 'Рецепт уже удален из списка'
         }, status=status.HTTP_400_BAD_REQUEST)
-
     return self._create_or_destroy(
-        request.method, request, pk, Favorite, FavoriteSerializer
+        request.method, request, pk, model, serializer
     )
-"""

@@ -2,12 +2,13 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (Favorite, Follow, Ingredient, Recipe, ShoppingList,
-                            Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
+from recipes.models import (Favorite, Follow, Ingredient, Recipe, ShoppingList,
+                            Tag)
 from users.models import User
 
 from .filters import IngredientFilter, RecipeFilter
@@ -16,7 +17,7 @@ from .serializers import (CustomUserSerializer, FavoriteSerializer,
                           FollowSerializer, IngredientSerializer,
                           RecipeCreateSerializer, RecipeSerializer,
                           ShoppingListSerializer, TagSerializer)
-from .utils import get_shopping_cart
+from .utils import favorite_or_shop_check, get_shopping_cart
 
 
 class CustomUserViewSet(UserViewSet):
@@ -138,22 +139,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk):
-        user = request.user
-        if (request.method == 'POST'
-                and Favorite.objects.filter(user=user, recipe_id=pk).exists()):
-            return Response({
-                'errors': 'Рецепт уже добавлен в список'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        if (request.method == 'DELETE'
-                and not Favorite.objects.filter(user=user,
-                                                recipe_id=pk).exists()):
-            return Response({
-                'errors': 'Рецепт уже удален из списка'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        return self._create_or_destroy(
-            request.method, request, pk, Favorite, FavoriteSerializer
-        )
+        favorite_or_shop_check(self, request, pk, Favorite, FavoriteSerializer)
 
     @action(
         detail=True,
@@ -161,23 +147,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk):
-        user = request.user
-        if (request.method == 'POST'
-                and ShoppingList.objects.filter(user=user,
-                                                recipe_id=pk).exists()):
-            return Response({
-                'errors': 'Рецепт уже добавлен в список'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        if (request.method == 'DELETE' and not
-                ShoppingList.objects.filter(user=user, recipe_id=pk).exists()):
-            return Response({
-                'errors': 'Рецепт уже удален из списка'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        return self._create_or_destroy(
-            request.method, request, pk, ShoppingList,
-            ShoppingListSerializer
-        )
+        favorite_or_shop_check(self, request, pk,
+                               ShoppingList, ShoppingListSerializer)
 
     @action(
         detail=False,
