@@ -2,12 +2,13 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (Favorite, Follow, Ingredient, Recipe, ShoppingList,
-                            Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
+from recipes.models import (Favorite, Follow, Ingredient, Recipe, ShoppingList,
+                            Tag)
 from users.models import User
 
 from .filters import IngredientFilter, RecipeFilter
@@ -138,7 +139,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def favorite(self, request, pk):
-        favorite_or_shop_check(self, request, pk, Favorite, FavoriteSerializer)
+        return (favorite_or_shop_check(self, request,
+                                       pk, Favorite, FavoriteSerializer)
+                )
 
     @action(
         detail=True,
@@ -146,8 +149,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk):
-        favorite_or_shop_check(self, request, pk,
-                               ShoppingList, ShoppingListSerializer)
+        return (favorite_or_shop_check(self, request, pk,
+                                       ShoppingList, ShoppingListSerializer)
+                )
 
     @action(
         detail=False,
