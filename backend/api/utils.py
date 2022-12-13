@@ -1,4 +1,3 @@
-import pandas as pd
 from django.db.models import Sum
 from recipes.models import IngredientRecipe
 
@@ -21,8 +20,33 @@ def get_shopping_cart(user):
         'ingredient__name',
         'ingredient__measurement_unit'
     ).order_by('ingredient__name').annotate(ingredient_total=Sum('amount'))
-    df = pd.DataFrame(list(ingredients))
-    df = df.iloc[:, [0, 2, 1]]
-    df.columns = ['ингредиент', 'количество', 'ед измерения']
 
-    return ([df.to_string(index=False)])
+    content = ''
+    for ingredient in ingredients:
+        content += (
+            f'∙ {ingredient["ingredient__name"]} '
+            f'({ingredient["ingredient__measurement_unit"]}) '
+            f'- {ingredient["ingredient_total"]}\n'
+        )
+    return content
+
+
+"""
+def favorite_or_shop(self, request, pk):
+    user = request.user
+    if (request.method == 'POST'
+            and Favorite.objects.filter(user=user, recipe_id=pk).exists()):
+        return Response({
+            'errors': 'Рецепт уже добавлен в список'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    if (request.method == 'DELETE'
+            and not Favorite.objects.filter(user=user,
+                                            recipe_id=pk).exists()):
+        return Response({
+            'errors': 'Рецепт уже удален из списка'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    return self._create_or_destroy(
+        request.method, request, pk, Favorite, FavoriteSerializer
+    )
+"""
