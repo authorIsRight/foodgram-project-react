@@ -9,8 +9,8 @@
 
 
 Веб сайт доступен по адресу http://178.154.222.150/recipes
-Или этому [strangerecipe.sytes.net] (http://strangerecipe.sytes.net/recipes)
- 
+Или этому [strangerecipe.sytes.net](http://strangerecipe.sytes.net/recipes)
+
 Подробная спецификация api доступна по адресу http://178.154.222.150/api/docs/redoc.html
 
 Пароль и логин суперпользователя временно доступны [в этом рецепте](http://178.154.222.150/recipes/33)

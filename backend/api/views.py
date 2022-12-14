@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from recipes.models import (Favorite, Follow, Ingredient, Recipe, ShoppingList,
                             Tag)
 from users.models import User
-
 from .filters import IngredientFilter, RecipeFilter
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CustomUserSerializer, FavoriteSerializer,

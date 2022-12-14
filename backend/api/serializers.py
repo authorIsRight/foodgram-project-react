@@ -5,7 +5,6 @@ from rest_framework import serializers
 from recipes.models import (Favorite, Follow, Ingredient, IngredientRecipe,
                             Recipe, ShoppingList, Tag)
 from users.models import User
-
 from .utils import representation
 
 
