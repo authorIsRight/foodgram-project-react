@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from .pagination import PageLimitPagination
 from recipes.models import (Favorite, Follow, Ingredient, Recipe, ShoppingList,
                             Tag)
 from users.models import User
@@ -103,6 +104,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthorOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+    pagination_class = PageLimitPagination
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -148,6 +150,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def shopping_cart(self, request, pk):
+
         return (favorite_or_shop_check(self, request, pk,
                                        ShoppingList, ShoppingListSerializer)
                 )
